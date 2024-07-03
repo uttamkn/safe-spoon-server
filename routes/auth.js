@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const verifyToken = require("../middlewares/authMiddleware");
 const User = require("../models/User");
 
 const router = express.Router();
@@ -43,15 +44,44 @@ router.post("/token", async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { username: user.username },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
 
-    res.status(200).json({ user: { username: user.username }, token });
+    res.status(200).json({
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        allergies: user.allergies,
+      },
+    });
   } catch (error) {
     console.error("Error authenticating user:", error);
     res.status(500).json({ error: "An unexpected error occurred" });
   }
 });
 
+router.get("/user", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.user.username }).select(
+      "customId username allergies"
+    );
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({
+      id: user.customId,
+      username: user.username,
+      allergies: user.allergies,
+    });
+  } catch (err) {
+    console.error("Error fetching user data:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 module.exports = router;

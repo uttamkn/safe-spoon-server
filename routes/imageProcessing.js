@@ -15,9 +15,12 @@ router.post("/process_image", async (req, res) => {
 
   try {
     const imageBuffer = Buffer.from(image, "base64");
-    const client = await Client.connect("suhas1324/SafeSpoon");
+    const client = await Client.connect(
+      "https://9b450956fa2403127c.gradio.live/"
+    );
     const result = await client.predict("/predict", {
       image: imageBuffer,
+      allergies: "gluten, peanuts",
     });
 
     res.json(result.data);

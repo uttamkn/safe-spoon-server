@@ -7,7 +7,8 @@ import User from "../models/User.js";
 const router = express.Router();
 
 router.put("/sign_up", async (req, res) => {
-  const { username, password, allergies ,gender,age,weight,anyDiseases} = req.body;
+  const { username, password, allergies, gender, age, weight, anyDiseases } =
+    req.body;
 
   try {
     let existingUser = await User.findOne({ username });
@@ -62,6 +63,10 @@ router.post("/token", async (req, res) => {
         id: user.id,
         username: user.username,
         allergies: user.allergies,
+        age: user.age.toString(),
+        gender: user.gender,
+        weight: user.weight.toString(),
+        diseases: user.diseases,
       },
     });
   } catch (error) {
@@ -73,15 +78,19 @@ router.post("/token", async (req, res) => {
 router.get("/user", verifyToken, async (req, res) => {
   try {
     const user = await User.findOne({ username: req.user.username }).select(
-      "customId username allergies"
+      "id username allergies age gender weight anyDiseases"
     );
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     res.json({
-      id: user.customId,
+      id: user.id,
       username: user.username,
       allergies: user.allergies,
+      age: user.age.toString(),
+      gender: user.gender,
+      weight: user.weight.toString(),
+      diseases: user.diseases,
     });
   } catch (err) {
     console.error("Error fetching user data:", err);

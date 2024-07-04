@@ -1,8 +1,10 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const connectDB = require("./config/database");
-const authRoutes = require("./routes/auth");
-const cors = require("cors");
+import express from "express";
+import dotenv from "dotenv";
+import connectDB from "./config/database.js";
+import authRoutes from "./routes/auth.js";
+// import imageProcessingRoutes from "./routes/imageProcessing.js";
+import cors from "cors";
+
 dotenv.config();
 
 const app = express();
@@ -24,5 +26,6 @@ connectDB()
   .catch((err) => console.error("Failed to connect to MongoDB:", err));
 
 app.use("/auth", authRoutes);
+// app.use("/image-processing", imageProcessingRoutes);
 
-module.exports = app;
+export default app;

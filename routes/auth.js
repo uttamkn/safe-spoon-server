@@ -1,8 +1,8 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const verifyToken = require("../middlewares/authMiddleware");
-const User = require("../models/User");
+import express from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import verifyToken from "../middlewares/authMiddleware.js";
+import User from "../models/User.js";
 
 const router = express.Router();
 
@@ -84,4 +84,5 @@ router.get("/user", verifyToken, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-module.exports = router;
+
+export default router;

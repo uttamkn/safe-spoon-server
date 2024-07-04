@@ -3,11 +3,14 @@ import dotenv from "dotenv";
 import connectDB from "./config/database.js";
 import authRoutes from "./routes/auth.js";
 import imageProcessingRoutes from "./routes/imageProcessing.js";
+import bodyParser from "body-parser";
 import cors from "cors";
 
 dotenv.config();
 
 const app = express();
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 const corsOptions = {
   origin: "http://localhost:5173",

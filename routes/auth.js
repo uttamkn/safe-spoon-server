@@ -7,7 +7,7 @@ import User from "../models/User.js";
 const router = express.Router();
 
 router.put("/sign_up", async (req, res) => {
-  const { username, password, allergies } = req.body;
+  const { username, password, allergies ,gender,age,weight,anyDiseases} = req.body;
 
   try {
     let existingUser = await User.findOne({ username });
@@ -19,6 +19,10 @@ router.put("/sign_up", async (req, res) => {
       username,
       password: hashedPassword,
       allergies,
+      gender,
+      age,
+      weight,
+      anyDiseases,
     });
 
     await newUser.save();

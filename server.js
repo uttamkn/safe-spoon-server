@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/database.js";
 import authRoutes from "./routes/auth.js";
-import imageProcessingRoutes from "./routes/imageProcessing.js";
+import inputProcessingRoutes from "./routes/inputProcessing.js";
 import bodyParser from "body-parser";
 import cors from "cors";
 
@@ -29,6 +29,6 @@ connectDB()
   .catch((err) => console.error("Failed to connect to MongoDB:", err));
 
 app.use("/auth", authRoutes);
-app.use("/image-processing", imageProcessingRoutes);
+app.use("/input-processing", inputProcessingRoutes);
 
 export default app;

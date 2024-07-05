@@ -21,14 +21,14 @@ router.post("/process_image", async (req, res) => {
     const pathToSaveImage = "./public/image.png";
     converBase64ToImage(image, pathToSaveImage);
 
-    const client = await Client.connect(process.env.GRADIO_URI);
+    const client = await Client.connect(process.env.GRADIO_IMAGE_URI);
     const result = await client.predict("/predict", {
       image: handle_file(pathToSaveImage),
       allergies: user.allergies,
-      age: user.age.toString() || "",
-      gender: user.gender || "",
-      weight: user.weight.toString() || "",
-      diseases: user.diseases || "",
+      age: user.age.toString(),
+      gender: user.gender,
+      weight: user.weight.toString(),
+      diseases: user.anyDiseases,
     });
 
     res.json(result.data);
@@ -36,6 +36,33 @@ router.post("/process_image", async (req, res) => {
   } catch (error) {
     console.error("Error processing image:", error);
     res.status(500).send("Error processing image");
+  }
+});
+
+router.post("/process_text", async (req, res) => {
+  const { food, username } = req.body;
+
+  if (!food) {
+    return res.status(400).send("Food items are required");
+  }
+
+  try {
+    const user = await User.findOne({ username });
+
+    const client = await Client.connect(process.env.GRADIO_TEXT_URI);
+    const result = await client.predict("/predict", {
+      text: food,
+      allergies: user.allergies,
+      age: user.age.toString(),
+      gender: user.gender,
+      weight: user.weight.toString(),
+      diseases: user.anyDiseases,
+    });
+
+    res.json(result.data);
+  } catch (error) {
+    console.error("Error processing text:", error);
+    res.status(500).send("Error processing text");
   }
 });
 

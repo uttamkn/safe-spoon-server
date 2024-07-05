@@ -66,7 +66,7 @@ router.post("/token", async (req, res) => {
         age: user.age.toString(),
         gender: user.gender,
         weight: user.weight.toString(),
-        diseases: user.diseases,
+        anyDiseases: user.diseases,
       },
     });
   } catch (error) {
@@ -90,7 +90,7 @@ router.get("/user", verifyToken, async (req, res) => {
       age: user.age.toString(),
       gender: user.gender,
       weight: user.weight.toString(),
-      diseases: user.diseases,
+      anyDiseases: user.diseases,
     });
   } catch (err) {
     console.error("Error fetching user data:", err);

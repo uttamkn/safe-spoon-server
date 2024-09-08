@@ -1,7 +1,8 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/database";
+import authRoutes from "./routes/auth";
 
 dotenv.config();
 const app = express();
@@ -14,12 +15,13 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-app.get("/test", (req: Request, res: Response) => {
-  res.send("yo sup");
-});
+connectDB()
+  .then(() => {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log("listening on port", process.env.PORT);
+    });
+  })
+  .catch((err) => console.error("Error connecting to database: ", err));
 
-connectDB().then(() => {
-  app.listen(process.env.PORT, () => {
-    console.log("listening on port", process.env.PORT);
-  });
-});
+app.use("/api/auth", authRoutes);

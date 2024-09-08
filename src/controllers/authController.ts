@@ -24,7 +24,7 @@ export const signUp = async (req: Request, res: Response) => {
   }
 
   try {
-    const existingUser = await UserModel.findOne({ username });
+    const existingUser = await UserModel.findOne({ email });
 
     if (existingUser) {
       return res.status(400).json({ error: "User already exists" });
@@ -53,19 +53,19 @@ export const signUp = async (req: Request, res: Response) => {
 };
 
 export const signIn = async (req: Request, res: Response) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!username || !password) {
+  if (!email || !password) {
     return res
       .status(400)
-      .json({ error: "Bad request", requiredFields: "username, password" });
+      .json({ error: "Bad request", requiredFields: "email, password" });
   }
 
   try {
-    const user = await UserModel.findOne({ username });
+    const user = await UserModel.findOne({ email: email });
 
     if (!user) {
-      return res.status(401).json({ error: "Invalid Username" });
+      return res.status(401).json({ error: "Invalid Email" });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
@@ -82,27 +82,37 @@ export const signIn = async (req: Request, res: Response) => {
         .json({ error: "Internal server error (env variables)" });
     }
 
-    const token = jwt.sign({ username: user.username }, jwtsecret, {
+    const token = jwt.sign({ email: user.email }, jwtsecret, {
       expiresIn: "1h",
     });
 
-    res.status(200).json({
-      token,
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        age: user.age,
-        gender: user.gender,
-        weight: user.weight,
-        allergies: user.allergies,
-        diseases: user.diseases,
-      },
-    });
+    {
+      const { __v, password, ...userData } = user.toObject();
+      res.status(200).json({
+        token,
+        user: userData,
+      });
+    }
   } catch (err) {
     console.error("Error authenticating user: ", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
 
-export const getUser = () => {};
+export const getUser = async (req: Request, res: Response) => {
+  try {
+    const user = await UserModel.findOne({ email: req.user });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const { __v, password, ...userData } = user.toObject();
+    res.json({
+      user: userData,
+    });
+  } catch (err) {
+    console.error("Error fetching user data:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

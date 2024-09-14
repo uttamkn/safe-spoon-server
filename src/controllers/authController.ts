@@ -46,6 +46,35 @@ export const sendEmailVerification = async (req: Request, res: Response) => {
   }
 };
 
+// /api/auth/verify-email
+export const verifyEmail = async (req: Request, res: Response) => {
+  const { email, verificationCode } = req.body;
+
+  if (!email || !verificationCode) {
+    return res.status(400).json({
+      error: "Bad request",
+      requiredFields: "email, verificationCode",
+    });
+  }
+
+  try {
+    const user = await EmailModel.findOneAndDelete({
+      email,
+      verificationCode,
+      verificationCodeExpiresAt: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid verification code" });
+    }
+
+    return res.status(200).json({ message: "Email verified" });
+  } catch (err) {
+    console.error("Error verifying email: ", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 // /api/auth/sign-up
 export const signUp = async (req: Request, res: Response) => {
   const {

@@ -30,6 +30,7 @@ export const sendEmailVerification = async (req: Request, res: Response) => {
     const newEmail = new EmailModel({
       email,
       verificationCode,
+      verificationCodeExpiresAt: Date.now() + 15 * 60 * 1000,
     });
 
     generateTokenAndSetCookie(res, email);

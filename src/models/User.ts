@@ -27,7 +27,7 @@ const UserSchema: Schema = new Schema({
 const EmailSchema: Schema = new Schema({
   email: { type: String, required: true },
   verificationCode: String,
-  verificationCodeExpiresAt: { type: Date, default: Date.now() },
+  verificationCodeExpiresAt: Date,
 });
 
 export const EmailModel = mongoose.model("EmailModel", EmailSchema);

@@ -48,18 +48,17 @@ export const sendEmailVerification = async (req: Request, res: Response) => {
 
 // /api/auth/verify-email
 export const verifyEmail = async (req: Request, res: Response) => {
-  const { email, verificationCode } = req.body;
+  const { verificationCode } = req.body;
 
-  if (!email || !verificationCode) {
+  if (!verificationCode) {
     return res.status(400).json({
       error: "Bad request",
-      requiredFields: "email, verificationCode",
+      requiredFields: " verificationCode",
     });
   }
 
   try {
     const user = await EmailModel.findOneAndDelete({
-      email,
       verificationCode,
       verificationCodeExpiresAt: { $gt: Date.now() },
     });

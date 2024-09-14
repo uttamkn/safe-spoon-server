@@ -26,7 +26,7 @@ const UserSchema: Schema = new Schema({
 
 const EmailSchema: Schema = new Schema({
   email: { type: String, required: true, unique: true },
-  verificationCode: String,
+  verificationCode: { type: String, unique: true },
   verificationCodeExpiresAt: Date,
 });
 

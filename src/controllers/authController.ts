@@ -21,21 +21,23 @@ export const sendEmailVerification = async (req: Request, res: Response) => {
   ).toString();
 
   try {
-    const existingEmail = await EmailModel.findOne({ email });
+    let existingEmail = await EmailModel.findOne({ email });
 
+    // If email already exists, update the verification code and expiry
     if (existingEmail) {
-      return res.status(400).json({ error: "User already exists" });
+      existingEmail.verificationCode = verificationCode;
+      existingEmail.verificationCodeExpiresAt = Date.now() + 15 * 60 * 1000;
+    } else {
+      existingEmail = new EmailModel({
+        email,
+        verificationCode,
+        verificationCodeExpiresAt: Date.now() + 15 * 60 * 1000,
+      });
     }
-
-    const newEmail = new EmailModel({
-      email,
-      verificationCode,
-      verificationCodeExpiresAt: Date.now() + 15 * 60 * 1000,
-    });
 
     await sendOtp(email, verificationCode);
 
-    await newEmail.save();
+    await existingEmail.save();
 
     return res.status(201).json({ message: "Email sent" });
   } catch (err) {

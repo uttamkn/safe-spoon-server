@@ -16,7 +16,7 @@ export const sendEmailVerification = async (req: Request, res: Response) => {
     });
   }
 
-  const verificationToken = Math.floor(
+  const verificationCode = Math.floor(
     100000 + Math.random() * 900000,
   ).toString();
 
@@ -29,14 +29,20 @@ export const sendEmailVerification = async (req: Request, res: Response) => {
 
     const newEmail = new EmailModel({
       email,
-      verificationToken,
+      verificationCode,
     });
 
     generateTokenAndSetCookie(res, email);
-    await sendOtp(email, verificationToken);
+
+    await sendOtp(email, verificationCode);
 
     await newEmail.save();
-  } catch (err) {}
+
+    return res.status(201).json({ message: "Email sent" });
+  } catch (err) {
+    console.error("Error sending email verification: ", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 };
 
 // /api/auth/sign-up

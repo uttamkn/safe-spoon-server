@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import UserModel, { EmailModel, IUser } from "../models/User";
 import bcrypt from "bcryptjs";
-import { signJwt, generateTokenAndSetCookie } from "../utils/authUtils";
+import { signJwt } from "../utils/authUtils";
 import { sendOtp } from "../mailtrap/email";
 
 // /api/auth/send-email-verification
@@ -32,8 +32,6 @@ export const sendEmailVerification = async (req: Request, res: Response) => {
       verificationCode,
       verificationCodeExpiresAt: Date.now() + 15 * 60 * 1000,
     });
-
-    generateTokenAndSetCookie(res, email);
 
     await sendOtp(email, verificationCode);
 

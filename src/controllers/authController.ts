@@ -1,9 +1,45 @@
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-import UserModel, { IUser } from "../models/User";
+import UserModel, { EmailModel, IUser } from "../models/User";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { signJwt, generateTokenAndSetCookie } from "../utils/authUtils";
+import { sendOtp } from "../mailtrap/email";
 
+// /api/auth/send-email-verification
+export const sendEmailVerification = async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({
+      error: "Bad request",
+      requiredFields: "email is required",
+    });
+  }
+
+  const verificationToken = Math.floor(
+    100000 + Math.random() * 900000,
+  ).toString();
+
+  try {
+    const existingEmail = await EmailModel.findOne({ email });
+
+    if (existingEmail) {
+      return res.status(400).json({ error: "User already exists" });
+    }
+
+    const newEmail = new EmailModel({
+      email,
+      verificationToken,
+    });
+
+    generateTokenAndSetCookie(res, email);
+    await sendOtp(email, verificationToken);
+
+    await newEmail.save();
+  } catch (err) {}
+};
+
+// /api/auth/sign-up
 export const signUp = async (req: Request, res: Response) => {
   const {
     username,
@@ -45,14 +81,20 @@ export const signUp = async (req: Request, res: Response) => {
     });
 
     await newUser.save();
-    res.status(201).json({ message: "User created successfully" });
+
+    const token = signJwt(newUser.email);
+    return res.status(201).json({
+      token,
+    });
   } catch (err) {
     console.error("Error creating user: ", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
 
+// /api/auth/sign-in
 export const signIn = async (req: Request, res: Response) => {
+  console.log(req.body);
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -73,24 +115,10 @@ export const signIn = async (req: Request, res: Response) => {
       return res.status(401).json({ error: "Invalid Password" });
     }
 
-    const jwtsecret = process.env.JWT_SECRET;
-
-    if (!jwtsecret) {
-      console.error("JWT_SECRET not found in environment variables");
-      return res
-        .status(500)
-        .json({ error: "Internal server error (env variables)" });
-    }
-
-    const token = jwt.sign({ email: user.email }, jwtsecret, {
-      expiresIn: "1h",
-    });
-
+    const token = signJwt(user.email);
     {
-      const { __v, password, ...userData } = user.toObject();
-      res.status(200).json({
+      return res.status(200).json({
         token,
-        user: userData,
       });
     }
   } catch (err) {
@@ -99,6 +127,7 @@ export const signIn = async (req: Request, res: Response) => {
   }
 };
 
+// /api/auth/user
 export const getUser = async (req: Request, res: Response) => {
   try {
     const user = await UserModel.findOne({ email: req.user });
@@ -108,7 +137,7 @@ export const getUser = async (req: Request, res: Response) => {
     }
 
     const { __v, password, ...userData } = user.toObject();
-    res.json({
+    res.status(200).json({
       user: userData,
     });
   } catch (err) {

@@ -1,11 +1,17 @@
 import express from "express";
-import { signUp, signIn, getUser } from "../controllers/authController";
+import {
+  signUp,
+  signIn,
+  getUser,
+  sendEmailVerification,
+} from "../controllers/authController";
 import { verifyToken } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.put("/sign_up", signUp);
-router.post("/sign_in", signIn);
+router.post("/sign-up", signUp);
+router.post("/sign-in", signIn);
+router.post("/send-email-verification", sendEmailVerification);
 router.get("/user", verifyToken, getUser);
 
 export default router;

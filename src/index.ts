@@ -22,6 +22,6 @@ connectDB()
       console.log("listening on port", process.env.PORT);
     });
   })
-  .catch((err) => console.error("Error connecting to database: ", err));
+  .catch((err) => console.error(err));
 
 app.use("/api/auth", authRoutes);

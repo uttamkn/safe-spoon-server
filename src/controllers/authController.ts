@@ -129,7 +129,6 @@ export const signUp = async (req: Request, res: Response) => {
 
 // /api/auth/sign-in
 export const signIn = async (req: Request, res: Response) => {
-  console.log(req.body);
   const { email, password } = req.body;
 
   if (!email || !password) {

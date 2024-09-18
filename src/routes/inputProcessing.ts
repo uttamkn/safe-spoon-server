@@ -1,4 +1,4 @@
-import { handleOcr } from "../controllers/inputController";
+import { getReport } from "../controllers/inputController";
 import { verifyToken } from "../middlewares/authMiddleware";
 import { Router } from "express";
 
@@ -6,6 +6,6 @@ const router = Router();
 
 router.use(verifyToken);
 
-router.post("/ocr", handleOcr);
+router.post("/get-report", getReport);
 
 export default router;

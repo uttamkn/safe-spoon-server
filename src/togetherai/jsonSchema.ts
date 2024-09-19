@@ -39,10 +39,6 @@ export const jsonSchema: Record<string, any> = {
       },
       description: "List of ingredients with their associated risks.",
     },
-    overall_suggestion: {
-      type: "string",
-      description: "Overall recommendation whether to eat or avoid the food.",
-    },
   },
-  required: ["is_valid", "is_safe", "ingredient_risks", "overall_suggestion"],
+  required: ["is_valid", "is_safe"],
 };

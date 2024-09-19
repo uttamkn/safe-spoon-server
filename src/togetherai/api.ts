@@ -12,28 +12,28 @@ export const fetchReport = async (ocrText: string, user: IUser) => {
 
   Do not assume or invent any health conditions or ingredients. Only use the information provided in the prompt and user data.
   In addition to extracting the ingredients, validate the user's health information (age, weight, gender, allergies, and diseases):
-  - If the allergies or diseases provided by the user are not recognized, set \`is_valid\` to \`false\`, but \`is_safe\` to \`true\` because there is no valid health data to determine risks. In this case, skip generating the \`ingredient_risks\` and \`overall_suggestion\` fields.
+  - If the allergies or diseases provided by the user are not recognized, set \`is_valid\` to \`false\`, but \`is_safe\` to \`true\` because there is no valid health data to determine risks. 
+    In this case, skip generating the \`ingredient_risks\` field.
+  - If you do not find any valid ingredients in the OCR text, set the \`is_valid\` field to \`false\` and do not generate any ingredient-related information. In this case, skip generating the \`is_safe\`, \`ingredient_risks\`, and \`overall_suggestion\` fields. 
+  - Do not assume that user has any allergies or diseases if they are not provided in User Information.
   
   After extracting the ingredients and validating the health information, analyze the ingredients based on the user's personal health details, including their age, weight, gender, allergies, and diseases.
 
   Please provide a report in JSON format containing:
   1. A boolean \`is_valid\` indicating whether the provided ingredients and the user's health information are valid (i.e., the text contains recognizable food ingredients, and the health information provided is valid). 
-  2. A boolean \`is_safe\` indicating whether the food is safe to eat for the user considering their health conditions (allergies, diseases, etc.). If the health information is invalid, set \`is_safe\` to \`true\`.
+  2. A boolean \`is_safe\` indicating whether the food is safe to eat for the user considering their health conditions (allergies, diseases, etc.). 
   3. A list \`ingredient_risks\` where each ingredient includes:
      - \`ingredient\`: the name of the ingredient,
      - \`is_safe\`: whether the ingredient is safe to eat for the user,
      - \`risk_level\`: the level of risk for the user (\`low\`, \`moderate\`, \`high\`),
      - \`reason\`: a short description of why the ingredient is safe or unsafe.
-  4. An \`overall_suggestion\` with a recommendation on whether the user should eat or avoid the food.
 
-  If you do not find any valid ingredients in the OCR text, set the \`is_valid\` field to \`false\` and do not generate any ingredient-related information. In this case, skip generating the \`is_safe\`, \`ingredient_risks\`, and \`overall_suggestion\` fields.
-
-  Example User Information:
+  Here is the User Information:
   - Age: ${user.age}
   - Weight: ${user.weight} kg
   - Gender: ${user.gender}
-  - Allergies: ${user.allergies.join(", ")}
-  - Diseases: ${user.diseases.join(", ")}
+  - Allergies: ${user.allergies.length > 0 ? user.allergies.join(", ") : "None"}
+  - Diseases: ${user.diseases.length > 0 ? user.diseases.join(", ") : "None"}
 
   Here is the OCR text:
   "${ocrText}"`;
@@ -44,7 +44,7 @@ export const fetchReport = async (ocrText: string, user: IUser) => {
         {
           role: "system",
           content:
-            "You are a helpful assistant. Please analyze the following food ingredients and user health data.",
+            "You are a health assistant. Please analyze the following food ingredients and user health data.",
         },
         {
           role: "user",

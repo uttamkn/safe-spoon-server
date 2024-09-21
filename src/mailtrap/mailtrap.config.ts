@@ -1,13 +1,8 @@
 import { MailtrapClient } from "mailtrap";
-
-const TOKEN = process.env.MAILTRAP_API_TOKEN;
-
-if (!TOKEN) {
-  throw new Error("MAILTRAP_API_TOKEN not found in environment variables");
-}
+import { MAILTRAP_API_KEY } from "../env";
 
 export const mailtrapClient = new MailtrapClient({
-  token: TOKEN,
+  token: MAILTRAP_API_KEY,
 });
 
 export const sender = {

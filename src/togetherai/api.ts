@@ -1,8 +1,9 @@
 import Together from "together-ai";
 import { jsonSchema } from "./jsonSchema";
 import { IUser } from "../models/User";
+import { TOGETHER_API_KEY } from "../env";
 
-const together = new Together({ apiKey: process.env.TOGETHER_API_KEY });
+const together = new Together({ apiKey: TOGETHER_API_KEY });
 
 export const fetchReport = async (ocrText: string, user: IUser) => {
   const prompt = `

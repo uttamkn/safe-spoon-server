@@ -1,13 +1,12 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { JWT_SECRET } from "../env";
 
 export const signJwt = (email: string) => {
-  const jwtsecret = process.env.JWT_SECRET;
-
-  if (!jwtsecret) {
-    throw new Error("JWT_SECRET not found in environment variables");
-  }
-
-  return jwt.sign({ email }, jwtsecret, {
+  return jwt.sign({ email }, JWT_SECRET, {
     expiresIn: "1h",
   });
+};
+
+export const verifyJwt = (token: string): JwtPayload => {
+  return jwt.verify(token, JWT_SECRET) as JwtPayload;
 };

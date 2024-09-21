@@ -1,5 +1,6 @@
 import { NextFunction, Response, Request } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import { verifyJwt } from "../utils/authUtils";
+import { sendErrorResponse } from "../utils/errorUtils";
 
 export const verifyToken = (
   req: Request,
@@ -10,23 +11,14 @@ export const verifyToken = (
     req.headers.authorization && req.headers.authorization.split(" ")[1];
 
   if (!token) {
-    return res.status(401).json({ message: "Access denied, token missing!" });
-  }
-
-  const jwtsecret = process.env.JWT_SECRET;
-
-  if (!jwtsecret) {
-    console.error("JWT_SECRET not found in environment variables");
-    return res
-      .status(500)
-      .json({ error: "Internal server error (env variables)" });
+    return sendErrorResponse(res, 401, "Token is required");
   }
 
   try {
-    const decodedToken = jwt.verify(token, jwtsecret) as JwtPayload;
+    const decodedToken = verifyJwt(token);
     req.user = decodedToken.email;
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Invalid token" });
+    return sendErrorResponse(res, 401, "Invalid token");
   }
 };

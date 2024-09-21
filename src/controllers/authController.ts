@@ -4,16 +4,14 @@ import UserModel, { EmailModel, IUser } from "../models/User";
 import bcrypt from "bcryptjs";
 import { signJwt } from "../utils/authUtils";
 import { sendOtp } from "../mailtrap/email";
+import { sendErrorResponse } from "../utils/errorUtils";
 
 // /api/auth/send-email-verification
 export const sendEmailVerification = async (req: Request, res: Response) => {
   const { email } = req.body;
 
   if (!email) {
-    return res.status(400).json({
-      error: "Bad request",
-      requiredFields: "email is required",
-    });
+    return sendErrorResponse(res, 400, "Email is required");
   }
 
   const verificationCode = Math.floor(
@@ -42,7 +40,7 @@ export const sendEmailVerification = async (req: Request, res: Response) => {
     return res.status(201).json({ message: "Email sent" });
   } catch (err) {
     console.error("Error sending email verification: ", err);
-    return res.status(500).json({ error: "Internal server error" });
+    return sendErrorResponse(res, 500, "Internal server error");
   }
 };
 
@@ -51,10 +49,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
   const { verificationCode } = req.body;
 
   if (!verificationCode) {
-    return res.status(400).json({
-      error: "Bad request",
-      requiredFields: " verificationCode",
-    });
+    return sendErrorResponse(res, 400, "Verification code is required");
   }
 
   try {
@@ -64,13 +59,17 @@ export const verifyEmail = async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(401).json({ error: "Invalid verification code" });
+      return sendErrorResponse(
+        res,
+        400,
+        "Invalid or expired verification code",
+      );
     }
 
     return res.status(200).json({ message: "Email verified" });
   } catch (err) {
     console.error("Error verifying email: ", err);
-    return res.status(500).json({ error: "Internal server error" });
+    return sendErrorResponse(res, 500, "Internal server error");
   }
 };
 
@@ -88,17 +87,18 @@ export const signUp = async (req: Request, res: Response) => {
   } = req.body;
 
   if (!username || !password || !age || !gender || !email) {
-    return res.status(400).json({
-      error: "Bad request",
-      requiredFields: "username, password, age, gender, email",
-    });
+    return sendErrorResponse(
+      res,
+      400,
+      "Required fields: username, password, age, gender, email",
+    );
   }
 
   try {
     const existingUser = await UserModel.findOne({ email });
 
     if (existingUser) {
-      return res.status(400).json({ error: "User already exists" });
+      return sendErrorResponse(res, 400, "Email already exists");
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -123,7 +123,7 @@ export const signUp = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error("Error creating user: ", err);
-    return res.status(500).json({ error: "Internal server error" });
+    return sendErrorResponse(res, 500, "Internal server error");
   }
 };
 
@@ -132,9 +132,7 @@ export const signIn = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res
-      .status(400)
-      .json({ error: "Bad request", requiredFields: "email, password" });
+    return sendErrorResponse(res, 400, "Required fields: email, password");
   }
 
   try {
@@ -146,7 +144,7 @@ export const signIn = async (req: Request, res: Response) => {
 
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).json({ error: "Invalid Password" });
+      return sendErrorResponse(res, 401, "Invalid password");
     }
 
     const token = signJwt(user.email);
@@ -157,7 +155,7 @@ export const signIn = async (req: Request, res: Response) => {
     }
   } catch (err) {
     console.error("Error authenticating user: ", err);
-    return res.status(500).json({ error: "Internal server error" });
+    return sendErrorResponse(res, 500, "Internal server error");
   }
 };
 
@@ -167,7 +165,7 @@ export const getUser = async (req: Request, res: Response) => {
     const user = await UserModel.findOne({ email: req.user });
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return sendErrorResponse(res, 400, "User not found");
     }
 
     const { __v, password, ...userData } = user.toObject();
@@ -176,6 +174,6 @@ export const getUser = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error("Error fetching user data:", err);
-    res.status(500).json({ message: "Server error" });
+    return sendErrorResponse(res, 500, "Internal server error");
   }
 };

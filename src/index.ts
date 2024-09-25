@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/database";
 import authRoutes from "./routes/auth";
 import inputProcessingRoutes from "./routes/inputProcessing";
+import profileRoutes from "./routes/profile";
 import { PORT } from "./env";
 
 dotenv.config();
@@ -27,3 +28,4 @@ connectDB()
 
 app.use("/api/auth", authRoutes);
 app.use("/api/inputProcessing", inputProcessingRoutes);
+app.use("/api/profile", profileRoutes);

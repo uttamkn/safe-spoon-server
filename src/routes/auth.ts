@@ -1,19 +1,19 @@
-import express from "express";
+import { Router } from "express";
 import {
   signUp,
   signIn,
-  getUser,
+  verifyUser,
   sendEmailVerification,
   verifyEmail,
 } from "../controllers/authController";
 import { verifyToken } from "../middlewares/authMiddleware";
 
-const router = express.Router();
+const router = Router();
 
 router.post("/sign-up", signUp);
 router.post("/sign-in", signIn);
 router.put("/send-email-verification", sendEmailVerification);
 router.delete("/verify-email", verifyEmail);
-router.get("/user", verifyToken, getUser);
+router.get("/verify-user", verifyToken, verifyUser);
 
 export default router;

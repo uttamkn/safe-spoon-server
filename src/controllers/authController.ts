@@ -159,8 +159,8 @@ export const signIn = async (req: Request, res: Response) => {
   }
 };
 
-// /api/auth/user
-export const getUser = async (req: Request, res: Response) => {
+// /api/auth/verify-user
+export const verifyUser = async (req: Request, res: Response) => {
   try {
     const user = await UserModel.findOne({ email: req.user });
 
@@ -168,9 +168,8 @@ export const getUser = async (req: Request, res: Response) => {
       return sendErrorResponse(res, 400, "User not found");
     }
 
-    const { __v, password, ...userData } = user.toObject();
     res.status(200).json({
-      user: userData,
+      message: "User found",
     });
   } catch (err) {
     console.error("Error fetching user data:", err);

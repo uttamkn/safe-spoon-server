@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import UserModel, { VerificationModel, IUser } from "../models/User";
 import bcrypt from "bcryptjs";
 import { signJwt } from "../utils/authUtils";
-import { sendOtp, sendPasswordResetEmail } from "../mailtrap/email";
+import { sendOtp, sendPasswordResetEmail } from "../mail/email";
 import { sendErrorResponse } from "../utils/errorUtils";
 import User from "../models/User";
 import crypto from "crypto";

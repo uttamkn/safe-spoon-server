@@ -4,7 +4,6 @@
   "main": "index.ts",
   "scripts": {
     "start": "tsc && node --env-file=.env ./public/index.js",
-    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

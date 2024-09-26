@@ -5,13 +5,13 @@ import connectDB from "./config/database";
 import authRoutes from "./routes/auth";
 import inputProcessingRoutes from "./routes/inputProcessing";
 import profileRoutes from "./routes/profile";
-import { PORT } from "./env";
+import { CLIENT_URL, PORT } from "./env";
 
 dotenv.config();
 const app = express();
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: CLIENT_URL,
   credentials: true,
 };
 

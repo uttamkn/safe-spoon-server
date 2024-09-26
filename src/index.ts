@@ -20,14 +20,6 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-connectDB()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log("listening on port", process.env.PORT);
-    });
-  })
-  .catch((err) => console.error(err));
-
 app.get("/", (_req, res) => {
   res.send("Hello World!");
 });
@@ -35,3 +27,11 @@ app.get("/", (_req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/inputProcessing", inputProcessingRoutes);
 app.use("/api/profile", profileRoutes);
+
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log("listening on port", process.env.PORT);
+    });
+  })
+  .catch((err) => console.error(err));

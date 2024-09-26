@@ -12,11 +12,13 @@ const app = express();
 
 const corsOptions = {
   origin: CLIENT_URL,
+  methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 };
 
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true }));
 
 connectDB()
   .then(() => {

@@ -1,11 +1,11 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import connectDB from "./config/database";
+import connectDB from "../config/database";
 import authRoutes from "./routes/auth";
 import inputProcessingRoutes from "./routes/inputProcessing";
 import profileRoutes from "./routes/profile";
-import { CLIENT_URL, PORT } from "./env";
+import { CLIENT_URL, PORT } from "../env";
 import bodyParser from "body-parser";
 
 dotenv.config();

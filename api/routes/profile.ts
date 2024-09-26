@@ -3,8 +3,8 @@ import {
   getProfile,
   updatePassword,
   updateProfile,
-} from "../controllers/profileController";
-import { verifyToken } from "../middlewares/authMiddleware";
+} from "../../controllers/profileController";
+import { verifyToken } from "../../middlewares/authMiddleware";
 
 const router = Router();
 

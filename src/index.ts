@@ -31,7 +31,7 @@ app.use("/api/profile", profileRoutes);
 connectDB()
   .then(() => {
     app.listen(PORT, () => {
-      console.log("listening on port", process.env.PORT);
+      console.log("listening on port", PORT);
     });
   })
   .catch((err) => console.error(err));

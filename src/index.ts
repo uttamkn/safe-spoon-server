@@ -26,6 +26,10 @@ connectDB()
   })
   .catch((err) => console.error(err));
 
+app.get("/", (_req, res) => {
+  res.send("Hello World!");
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/inputProcessing", inputProcessingRoutes);
 app.use("/api/profile", profileRoutes);

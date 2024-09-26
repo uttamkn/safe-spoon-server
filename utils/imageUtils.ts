@@ -1,15 +1,27 @@
 import { createWorker } from "tesseract.js";
+import path from "path";
 
-export const extractTextFromImage = async (image: Buffer) => {
+export const extractTextFromImage = async (
+  image: Buffer,
+): Promise<string | undefined> => {
+  const wasmDirectory = path.join(__dirname, "..", "tesseract-core");
+
+  console.log("wasmDirectory: ", wasmDirectory);
+
   try {
     const worker = await createWorker("eng", 1, {
-      legacyCore: true,
-      legacyLang: true,
+      corePath: wasmDirectory,
     });
-    const ret = await worker.recognize(image);
+
+    const {
+      data: { text },
+    } = await worker.recognize(image);
+
     await worker.terminate();
-    return ret.data.text;
+
+    return text;
   } catch (error) {
     console.error("Error extracting text from image: ", error);
+    return undefined;
   }
 };

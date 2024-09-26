@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "start": "tsc && node --env-file=.env ./public/index.js",
+    "start": "tsc && node --env-file=.env ./public/api/index.js",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

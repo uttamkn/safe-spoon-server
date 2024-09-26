@@ -24,12 +24,17 @@ const UserSchema: Schema = new Schema({
   diseases: { type: [String] },
 });
 
-const EmailSchema: Schema = new Schema({
+const VerificationSchema: Schema = new Schema({
   email: { type: String, required: true, unique: true },
   verificationCode: { type: String, unique: true },
   verificationCodeExpiresAt: Date,
+  resetPasswordToken: String,
+  resetPasswordTokenExpiresAt: Date,
 });
 
-export const EmailModel = mongoose.model("EmailModel", EmailSchema);
+export const VerificationModel = mongoose.model(
+  "VerificationModel",
+  VerificationSchema,
+);
 
 export default mongoose.model<IUser>("UserModel", UserSchema);

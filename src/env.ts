@@ -18,3 +18,4 @@ export const TOGETHER_API_KEY = validateEnv(
   "TOGETHER_API_KEY",
   process.env.TOGETHER_API_KEY,
 );
+export const CLIENT_URL = validateEnv("CLIENT_URL", process.env.CLIENT_URL);

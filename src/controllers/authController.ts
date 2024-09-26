@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-import UserModel, { EmailModel, IUser } from "../models/User";
+import UserModel, { VerificationModel, IUser } from "../models/User";
 import bcrypt from "bcryptjs";
 import { signJwt } from "../utils/authUtils";
-import { sendOtp } from "../mailtrap/email";
+import { sendOtp, sendPasswordResetEmail } from "../mailtrap/email";
 import { sendErrorResponse } from "../utils/errorUtils";
+import User from "../models/User";
+import crypto from "crypto";
 
 // /api/auth/send-email-verification
 export const sendEmailVerification = async (req: Request, res: Response) => {
@@ -19,14 +21,14 @@ export const sendEmailVerification = async (req: Request, res: Response) => {
   ).toString();
 
   try {
-    let existingEmail = await EmailModel.findOne({ email });
+    let existingEmail = await VerificationModel.findOne({ email });
 
     // If email already exists, update the verification code and expiry
     if (existingEmail) {
       existingEmail.verificationCode = verificationCode;
       existingEmail.verificationCodeExpiresAt = Date.now() + 15 * 60 * 1000;
     } else {
-      existingEmail = new EmailModel({
+      existingEmail = new VerificationModel({
         email,
         verificationCode,
         verificationCodeExpiresAt: Date.now() + 15 * 60 * 1000,
@@ -53,7 +55,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
   }
 
   try {
-    const user = await EmailModel.findOneAndDelete({
+    const user = await VerificationModel.findOneAndDelete({
       verificationCode,
       verificationCodeExpiresAt: { $gt: Date.now() },
     });
@@ -123,6 +125,92 @@ export const signUp = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error("Error creating user: ", err);
+    return sendErrorResponse(res, 500, "Internal server error");
+  }
+};
+
+// /api/auth/forgot-password
+export const handleForgotPassword = async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return sendErrorResponse(res, 400, "Email is required");
+  }
+
+  const user = User.findOne({ email });
+
+  if (!user) {
+    return sendErrorResponse(res, 400, "User not found");
+  }
+
+  try {
+    const resetPasswordToken = crypto.randomBytes(20).toString("hex");
+    const resetPasswordTokenExpiresAt = Date.now() + 60 * 60 * 1000; // 1 hour
+
+    const existingVerification = await VerificationModel.findOne({ email });
+
+    // If email already exists, update the reset password token and expiry
+    if (existingVerification) {
+      existingVerification.resetPasswordToken = resetPasswordToken;
+      existingVerification.resetPasswordTokenExpiresAt =
+        resetPasswordTokenExpiresAt;
+      await existingVerification.save();
+    } else {
+      const newVerificationModel = new VerificationModel({
+        email,
+        resetPasswordToken,
+        resetPasswordTokenExpiresAt,
+      });
+      await newVerificationModel.save();
+    }
+
+    // Send email with reset password token
+    await sendPasswordResetEmail(
+      email,
+      `${process.env.CLIENT_URL}/sign-in/reset-password/${resetPasswordToken}`,
+    );
+
+    return res.status(200).json({ message: "Email sent" });
+  } catch (error) {
+    console.error("Error sending password reset email: ", error);
+    return sendErrorResponse(res, 500, "Internal server error");
+  }
+};
+
+// /api/auth/reset-password/:token
+export const handleResetPassword = async (req: Request, res: Response) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  if (!password) {
+    return sendErrorResponse(res, 400, "Password is required");
+  }
+
+  try {
+    const verification = await VerificationModel.findOneAndDelete({
+      resetPasswordToken: token,
+      resetPasswordTokenExpiresAt: { $gt: Date.now() },
+    });
+
+    if (!verification) {
+      return sendErrorResponse(res, 400, "Invalid or expired token");
+    }
+
+    const user = await UserModel.findOne({ email: verification.email });
+
+    if (!user) {
+      return sendErrorResponse(res, 400, "User not found");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    user.password = hashedPassword;
+
+    await user.save();
+
+    return res.status(200).json({ message: "Password reset" });
+  } catch (error) {
+    console.error("Error resetting password: ", error);
     return sendErrorResponse(res, 500, "Internal server error");
   }
 };

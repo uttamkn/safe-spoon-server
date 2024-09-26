@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth";
 import inputProcessingRoutes from "./routes/inputProcessing";
 import profileRoutes from "./routes/profile";
 import { CLIENT_URL, PORT } from "./env";
+import bodyParser from "body-parser";
 
 dotenv.config();
 const app = express();
@@ -17,9 +18,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ extended: true }));
-
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/", (_req, res) => {
   res.send("Hello World!");
 });

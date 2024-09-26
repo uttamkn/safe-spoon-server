@@ -27,7 +27,7 @@ export const fetchReport = async (ocrText: string, user: IUser) => {
      - \`ingredient\`: the name of the ingredient,
      - \`is_safe\`: whether the ingredient is safe to eat for the user,
      - \`risk_level\`: the level of risk for the user (\`low\`, \`moderate\`, \`high\`),
-     - \`reason\`: a short description of why the ingredient is safe or unsafe.
+     - \`reason\`: a one line description of why the ingredient is safe or unsafe.
 
   Here is the User Information:
   - Age: ${user.age}
@@ -52,7 +52,9 @@ export const fetchReport = async (ocrText: string, user: IUser) => {
           content: prompt,
         },
       ],
-      model: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+      // model: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+      model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+      // model: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
       response_format: { type: "json_object", schema: jsonSchema },
       max_tokens: 512,
       temperature: 0.7,
@@ -62,6 +64,7 @@ export const fetchReport = async (ocrText: string, user: IUser) => {
 
     if (extract?.choices?.[0]?.message?.content) {
       const output = JSON.parse(extract?.choices?.[0]?.message?.content);
+      console.log("Output received:", output);
       return output;
     } else {
       console.log("No valid response received.");

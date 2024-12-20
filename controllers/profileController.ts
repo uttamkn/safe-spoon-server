@@ -12,7 +12,7 @@ export const getProfile = async (req: Request, res: Response) => {
       return sendErrorResponse(res, 400, "User not found");
     }
 
-    const { password, _id, __v, ...userWithoutPassword } = user.toObject();
+    const { password, _id, ...userWithoutPassword } = user.toObject();
     res.status(200).json({
       user: userWithoutPassword,
     });

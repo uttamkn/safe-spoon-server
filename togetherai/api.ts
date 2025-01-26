@@ -7,22 +7,22 @@ const together = new Together({ apiKey: TOGETHER_API_KEY });
 
 export const fetchReport = async (ocrText: string, user: IUser) => {
   const prompt = `
-  You are a health assistant. You will be given a text extracted from an OCR scan of food ingredients. 
-  The text may contain inaccuracies due to the OCR process, so please be cautious and only extract the list of ingredients, ignoring any irrelevant text like marketing slogans, quantities, or unrelated data. 
+  You are a health assistant. You will be given a text extracted from an OCR scan of food ingredients.
+  The text may contain inaccuracies due to the OCR process, so please be cautious and only extract the list of ingredients, ignoring any irrelevant text like marketing slogans, quantities, or unrelated data.
   If no valid ingredients can be extracted, set the \`is_valid\` field to \`false\`.
 
   Do not assume or invent any health conditions or ingredients. Only use the information provided in the prompt and user data.
   In addition to extracting the ingredients, validate the user's health information (age, weight, gender, allergies, and diseases):
-  - If the allergies or diseases provided by the user are not recognized, set \`is_valid\` to \`false\`, but \`is_safe\` to \`true\` because there is no valid health data to determine risks. 
+  - If the allergies or diseases provided by the user are not recognized, set \`is_valid\` to \`false\`, but \`is_safe\` to \`true\` because there is no valid health data to determine risks.
     In this case, skip generating the \`ingredient_risks\` field.
-  - If you do not find any valid ingredients in the OCR text, set the \`is_valid\` field to \`false\` and do not generate any ingredient-related information. In this case, skip generating the \`is_safe\`, \`ingredient_risks\`, and \`overall_suggestion\` fields. 
+  - If you do not find any valid ingredients in the OCR text, set the \`is_valid\` field to \`false\` and do not generate any ingredient-related information. In this case, skip generating the \`is_safe\`, \`ingredient_risks\`, and \`overall_suggestion\` fields.
   - Do not assume that user has any allergies or diseases if they are not provided in User Information.
-  
+
   After extracting the ingredients and validating the health information, analyze the ingredients based on the user's personal health details, including their age, weight, gender, allergies, and diseases.
 
   Please provide a report in JSON format containing:
-  1. A boolean \`is_valid\` indicating whether the provided ingredients and the user's health information are valid (i.e., the text contains recognizable food ingredients, and the health information provided is valid). 
-  2. A boolean \`is_safe\` indicating whether the food is safe to eat for the user considering their health conditions (allergies, diseases, etc.). 
+  1. A boolean \`is_valid\` indicating whether the provided ingredients and the user's health information are valid (i.e., the text contains recognizable food ingredients, and the health information provided is valid).
+  2. A boolean \`is_safe\` indicating whether the food is safe to eat for the user considering their health conditions (allergies, diseases, etc.).
   3. A list \`ingredient_risks\` where each ingredient includes:
      - \`ingredient\`: the name of the ingredient,
      - \`is_safe\`: whether the ingredient is safe to eat for the user,
@@ -52,8 +52,8 @@ export const fetchReport = async (ocrText: string, user: IUser) => {
           content: prompt,
         },
       ],
-      // model: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
-      model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+      model: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+      // model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
       // model: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
       response_format: { type: "json_object", schema: jsonSchema },
       max_tokens: 512,

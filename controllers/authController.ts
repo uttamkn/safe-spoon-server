@@ -21,6 +21,12 @@ export const sendEmailVerification = async (req: Request, res: Response) => {
   ).toString();
 
   try {
+    const existingUser = await UserModel.findOne({ email });
+
+    if (existingUser) {
+      return sendErrorResponse(res, 400, "Email already exists");
+    }
+
     let existingEmail = await VerificationModel.findOne({ email });
 
     // If email already exists, update the verification code and expiry

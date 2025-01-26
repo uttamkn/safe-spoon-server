@@ -25,6 +25,8 @@ export const getReport = async (req: Request, res: Response) => {
       return sendErrorResponse(res, 400, "No text found in image");
     }
 
+    console.log(text);
+
     const userEmail = req.user;
     const user: IUser | null = await User.findOne({ email: userEmail });
     if (!user) {

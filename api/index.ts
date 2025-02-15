@@ -26,12 +26,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/inputProcessing", inputProcessingRoutes);
 app.use("/api/profile", profileRoutes);
 
-connectDB().catch((err) => console.error(err));
-
-if (process.env.NODE_ENV !== "production") {
+connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log("listening on port", PORT);
+    console.log(`Server is running on port ${PORT}`);
   });
-}
+}).catch((err) => {
+  console.error("Failed to connect to the database", err);
+});
 
-export default app;

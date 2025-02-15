@@ -26,10 +26,12 @@ app.use("/api/auth", authRoutes);
 app.use("/api/inputProcessing", inputProcessingRoutes);
 app.use("/api/profile", profileRoutes);
 
-connectDB()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log("listening on port", PORT);
-    });
-  })
-  .catch((err) => console.error(err));
+connectDB().catch((err) => console.error(err));
+
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log("listening on port", PORT);
+  });
+}
+
+export default app;

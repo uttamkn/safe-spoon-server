@@ -104,10 +104,9 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "include": [
-    "api/**/*.ts",
     "types/**/*.d.ts",
     "env.ts"
-  ],
+, "index.ts"  ],
   "exclude": [
     "node_modules"
   ]

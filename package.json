@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "start": "tsc && node --env-file=.env ./public/index.js",
+    "start": "tsc && node --env-file=.env ./api/index.js",
     "build": "tsc"
   },
   "keywords": [],

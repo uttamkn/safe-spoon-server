@@ -1,5 +1,5 @@
-import { getReport } from "../controllers/inputController";
-import { verifyToken } from "../middlewares/authMiddleware";
+import { getReport } from "../../controllers/inputController";
+import { verifyToken } from "../../middlewares/authMiddleware";
 import { Router } from "express";
 
 const router = Router();

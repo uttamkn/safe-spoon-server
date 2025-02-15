@@ -7,8 +7,8 @@ import {
   verifyEmail,
   handleForgotPassword,
   handleResetPassword,
-} from "../controllers/authController";
-import { verifyToken } from "../middlewares/authMiddleware";
+} from "../../controllers/authController";
+import { verifyToken } from "../../middlewares/authMiddleware";
 
 const router = Router();
 

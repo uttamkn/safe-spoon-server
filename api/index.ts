@@ -1,10 +1,10 @@
 import express from "express";
 import cors from "cors";
-import connectDB from "./config/database";
-import authRoutes from "./routes/auth";
-import inputProcessingRoutes from "./routes/inputProcessing";
-import profileRoutes from "./routes/profile";
-import { CLIENT_URL, PORT } from "./env";
+import connectDB from "../config/database";
+import authRoutes from "../routes/auth";
+import inputProcessingRoutes from "../routes/inputProcessing";
+import profileRoutes from "../routes/profile";
+import { CLIENT_URL, PORT } from "../env";
 
 const app = express();
 
